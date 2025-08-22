@@ -3,6 +3,7 @@ import time
 import json
 import csv
 import os
+import socket
 from datetime import datetime, date, timedelta
 from pathlib import Path
 import pytz
@@ -102,9 +103,12 @@ def get_spx_value():
 def post_to_discord(message, color=0x00ff00):
     """Post message to Discord webhook"""
     try:
+        # Get hostname for identification
+        hostname = socket.gethostname()
+        
         embed = {
             "title": "SPX Trading Alert",
-            "description": message,
+            "description": f"{message}\n\n🏠 **Host**: {hostname}",
             "color": color,
             "timestamp": datetime.utcnow().isoformat()
         }
