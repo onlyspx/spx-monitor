@@ -207,12 +207,19 @@ For 24/7 monitoring without keeping your computer on, deploy to the cloud:
 
 #### Render (Great Free Option)
 1. **Sign up** at [render.com](https://render.com)
-2. **Create new Web Service**
-3. **Connect GitHub repo**
+2. **Click "New +" → "Web Service"**
+3. **Connect your GitHub repo**
 4. **Configure**:
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `python csv_spx_monitor.py`
-5. **Deploy**
+   - **Name**: `spx-monitor`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python render_app.py`
+   - **Plan**: Free
+5. **Click "Create Web Service"**
+6. **Set Environment Variables** (if needed):
+   - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL
+7. **Deploy!** (takes ~5 minutes)
+
+**Note**: Render's free tier will sleep after 15 minutes of inactivity, but will wake up when accessed. The health check endpoint helps keep it alive.
 
 #### Heroku (Production Ready)
 1. **Sign up** at [heroku.com](https://heroku.com)
