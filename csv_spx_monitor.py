@@ -80,7 +80,13 @@ def load_levels_from_csv(csv_file):
 def get_spx_value():
     """Fetch current SPX value from API"""
     try:
-        response = requests.get(API_URL)
+        print(f"🔍 Fetching SPX data from: {API_URL}")
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(API_URL, headers=headers, timeout=10)
+        print(f"📡 API Response Status: {response.status_code}")
+        
         if response.status_code == 200:
             data = response.json()
             if data:
@@ -90,14 +96,22 @@ def get_spx_value():
                     return float(spx_value_str)
                 else:
                     print("SPX key not found in the latest data point.")
+                    print(f"Available keys: {list(latest_datapoint.keys())}")
             else:
                 print("API returned empty data list.")
         elif response.status_code == 204:
             print(f"API returned no content (204). Market might be closed or API temporarily unavailable.")
         else:
             print(f"Failed to get SPX value from API. Status code: {response.status_code}")
+            print(f"Response headers: {dict(response.headers)}")
+            print(f"Response text: {response.text[:200]}...")
+    except requests.exceptions.Timeout:
+        print("⏰ API request timed out after 10 seconds")
+    except requests.exceptions.ConnectionError as e:
+        print(f"🔌 Connection error: {e}")
     except Exception as e:
-        print(f"Error fetching SPX: {e}")
+        print(f"❌ Error fetching SPX: {e}")
+        print(f"Error type: {type(e).__name__}")
     return None
 
 def post_to_discord(message, color=0x00ff00):
