@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.spx.monitor</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/cparikh/ws/personal/say/venv/bin/python</string>
+        <string>/Users/cparikh/ws/personal/say/csv_spx_monitor.py</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/cparikh/ws/personal/say</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/cparikh/ws/personal/say/spx_monitor.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/cparikh/ws/personal/say/spx_monitor_error.log</string>
+</dict>
+</plist>
