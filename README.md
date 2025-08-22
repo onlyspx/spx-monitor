@@ -121,9 +121,11 @@ support,6375,Key pivot level,high
 resistance,6430,POLR upside target,high
 ```
 
-## Continuous Monitoring Options
+## Deployment Options
 
-To keep the SPX monitor running continuously, you have several options:
+### Local Deployment
+
+To keep the SPX monitor running continuously on your local machine:
 
 ### Option 1: Run in Background (Simple)
 ```bash
@@ -190,6 +192,49 @@ launchctl unload ~/Library/LaunchAgents/com.spx.monitor.plist
 # If running in terminal
 Ctrl+C
 ```
+
+### Cloud Deployment (Recommended)
+
+For 24/7 monitoring without keeping your computer on, deploy to the cloud:
+
+#### Railway (Easiest - Recommended)
+1. **Sign up** at [railway.app](https://railway.app)
+2. **Connect your GitHub repo**
+3. **Deploy automatically** - Railway will detect the Python app
+4. **Set environment variables** (if needed):
+   - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL
+5. **Monitor logs** in Railway dashboard
+
+#### Render (Great Free Option)
+1. **Sign up** at [render.com](https://render.com)
+2. **Create new Web Service**
+3. **Connect GitHub repo**
+4. **Configure**:
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `python csv_spx_monitor.py`
+5. **Deploy**
+
+#### Heroku (Production Ready)
+1. **Sign up** at [heroku.com](https://heroku.com)
+2. **Install Heroku CLI**
+3. **Deploy**:
+   ```bash
+   heroku create your-spx-monitor
+   git push heroku main
+   heroku ps:scale worker=1
+   ```
+
+#### AWS Lambda (Serverless)
+1. **Create Lambda function**
+2. **Upload code as ZIP**
+3. **Set up EventBridge** for scheduled execution
+4. **Configure environment variables**
+
+### Environment Variables for Cloud
+If deploying to cloud, you may need to set these environment variables:
+- `DISCORD_WEBHOOK_URL`: Your Discord webhook URL
+- `API_URL`: SPX API endpoint (optional, has default)
+- `TOLERANCE`: Level tolerance in points (optional, default 5)
 
 ## Notes
 
