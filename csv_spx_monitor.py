@@ -152,6 +152,52 @@ def test_discord_connection():
         print("❌ Discord webhook test failed!")
     return success
 
+def get_nearby_levels(spx_value, levels, direction="up", count=3):
+    """Get nearby levels in the specified direction"""
+    nearby_levels = []
+    
+    if direction == "up":
+        # Get resistance levels above current price
+        for level_info in levels["resistance"]:
+            level_value = level_info['value']
+            if level_value > spx_value:
+                nearby_levels.append({
+                    'value': level_value,
+                    'description': level_info['description'],
+                    'importance': level_info['importance'],
+                    'distance': level_value - spx_value
+                })
+        # Sort by distance (closest first)
+        nearby_levels.sort(key=lambda x: x['distance'])
+        return nearby_levels[:count]
+    
+    else:  # direction == "down"
+        # Get support levels below current price
+        for level_info in levels["support"]:
+            level_value = level_info['value']
+            if level_value < spx_value:
+                nearby_levels.append({
+                    'value': level_value,
+                    'description': level_info['description'],
+                    'importance': level_info['importance'],
+                    'distance': spx_value - level_value
+                })
+        # Sort by distance (closest first)
+        nearby_levels.sort(key=lambda x: x['distance'])
+        return nearby_levels[:count]
+
+def format_nearby_levels(nearby_levels):
+    """Format nearby levels for display"""
+    if not nearby_levels:
+        return ""
+    
+    level_strings = []
+    for level in nearby_levels:
+        importance_emoji = "🔴" if level['importance'] == "high" else "🟡"
+        level_strings.append(f"{importance_emoji} {level['description']} at {level['value']:.1f}")
+    
+    return "\n".join(level_strings)
+
 def analyze_spx_levels(spx_value, levels):
     """Analyze SPX value against key levels and return trading signals"""
     signals = []
@@ -167,10 +213,19 @@ def analyze_spx_levels(spx_value, levels):
             level_key = f"support_{level_value}"
             if level_key not in last_posted_levels:
                 importance_emoji = "🔴" if importance == "high" else "🟡"
+                
+                # Get nearby upside levels
+                nearby_upside = get_nearby_levels(spx_value, levels, "up", 3)
+                nearby_text = format_nearby_levels(nearby_upside)
+                
+                message = f"{importance_emoji} **SPX Support Test**: {spx_value:.2f} testing {description} at {level_value}"
+                if nearby_text:
+                    message += f"\n\n📈 **Next Upside Levels**:\n{nearby_text}"
+                
                 signals.append({
                     "type": "support",
                     "level": level_value,
-                    "message": f"{importance_emoji} **SPX Support Test**: {spx_value:.2f} testing {description} at {level_value}",
+                    "message": message,
                     "color": 0x00ff00
                 })
                 last_posted_levels.add(level_key)
@@ -186,10 +241,19 @@ def analyze_spx_levels(spx_value, levels):
             level_key = f"resistance_{level_value}"
             if level_key not in last_posted_levels:
                 importance_emoji = "🔴" if importance == "high" else "🟡"
+                
+                # Get nearby upside levels (since we're testing resistance, show what's above)
+                nearby_upside = get_nearby_levels(spx_value, levels, "up", 3)
+                nearby_text = format_nearby_levels(nearby_upside)
+                
+                message = f"{importance_emoji} **SPX Resistance Test**: {spx_value:.2f} testing {description} at {level_value}"
+                if nearby_text:
+                    message += f"\n\n📈 **Next Upside Levels**:\n{nearby_text}"
+                
                 signals.append({
                     "type": "resistance", 
                     "level": level_value,
-                    "message": f"{importance_emoji} **SPX Resistance Test**: {spx_value:.2f} testing {description} at {level_value}",
+                    "message": message,
                     "color": 0xff0000
                 })
                 last_posted_levels.add(level_key)
@@ -202,10 +266,18 @@ def analyze_spx_levels(spx_value, levels):
         if spx_value > level_value + TOLERANCE:
             level_key = f"breakout_up_{level_value}"
             if level_key not in last_posted_levels:
+                # Get nearby upside levels for breakout
+                nearby_upside = get_nearby_levels(spx_value, levels, "up", 3)
+                nearby_text = format_nearby_levels(nearby_upside)
+                
+                message = f"🚀 **SPX Breakout**: {spx_value:.2f} broke above {description} at {level_value}!"
+                if nearby_text:
+                    message += f"\n\n📈 **Next Upside Levels**:\n{nearby_text}"
+                
                 signals.append({
                     "type": "breakout_up",
                     "level": level_value,
-                    "message": f"🚀 **SPX Breakout**: {spx_value:.2f} broke above {description} at {level_value}!",
+                    "message": message,
                     "color": 0x00ff00
                 })
                 last_posted_levels.add(level_key)
@@ -217,10 +289,18 @@ def analyze_spx_levels(spx_value, levels):
         if spx_value < level_value - TOLERANCE:
             level_key = f"breakout_down_{level_value}"
             if level_key not in last_posted_levels:
+                # Get nearby downside levels for breakdown
+                nearby_downside = get_nearby_levels(spx_value, levels, "down", 3)
+                nearby_text = format_nearby_levels(nearby_downside)
+                
+                message = f"📉 **SPX Breakdown**: {spx_value:.2f} broke below {description} at {level_value}!"
+                if nearby_text:
+                    message += f"\n\n📉 **Next Downside Levels**:\n{nearby_text}"
+                
                 signals.append({
                     "type": "breakout_down",
                     "level": level_value,
-                    "message": f"📉 **SPX Breakdown**: {spx_value:.2f} broke below {description} at {level_value}!",
+                    "message": message,
                     "color": 0xff0000
                 })
                 last_posted_levels.add(level_key)
