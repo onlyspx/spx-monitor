@@ -82,9 +82,11 @@ def get_spx_value():
     try:
         print(f"🔍 Fetching SPX data from: {API_URL}")
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Encoding': 'identity'  # Don't accept compression
         }
-        response = requests.get(API_URL, headers=headers, timeout=10)
+        response = requests.get(API_URL, headers=headers, timeout=15)
         print(f"📡 API Response Status: {response.status_code}")
         
         if response.status_code == 200:
@@ -106,7 +108,7 @@ def get_spx_value():
             print(f"Response headers: {dict(response.headers)}")
             print(f"Response text: {response.text[:200]}...")
     except requests.exceptions.Timeout:
-        print("⏰ API request timed out after 10 seconds")
+        print("⏰ API request timed out after 15 seconds")
     except requests.exceptions.ConnectionError as e:
         print(f"🔌 Connection error: {e}")
     except Exception as e:
