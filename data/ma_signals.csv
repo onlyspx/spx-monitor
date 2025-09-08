@@ -1,0 +1,2 @@
+timestamp,price,trend,signal,ma_50_ema,ma_50_sma,ma_200_ema,ma_200_sma
+2025-09-08T09:39:16.034794,647.1,BULLISH,Price above all MAs,646.5,646.3,645.8,645.6
